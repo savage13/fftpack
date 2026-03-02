@@ -1,0 +1,11 @@
+{
+    "type": "module",
+    "scripts": {
+        "dev": "esbuild --outfile=fftpack.js src/fftpack.ts --bundle --watch --sourcemap --tree-shaking=false --format=esm",
+        "test": "node --watch ./tests/tests.js "
+    },
+    "dependencies": {
+        "esbuild": "^0.27.3",
+        "typescript": "^5.9.3"
+    }
+}
