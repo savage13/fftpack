@@ -32,9 +32,14 @@ function __deepEqualTolerance(a, b, tol) {
             throw new Error(`${a} != ${b}`)
         }
     } else if(typeof a == 'number') {
-        let diff = Math.abs(a - b)
-        if(diff > tol) {
-            throw new Error(`abs(${a} - ${b}) (${diff}) > ${tol}`)
+        if(Number.isNaN(a) && Number.isNaN(b)) {
+        } else if(Number.isNaN(a) != Number.isNaN(b)) {
+            throw new Error(`NaN a: ${a} b: ${b}`)
+        } else {
+            let diff = Math.abs(a - b)
+            if(diff > tol) {
+                throw new Error(`abs(${a} - ${b}) (${diff}) > ${tol}`)
+            }
         }
     } else if(typeof a == 'object') {
         let key_a = Object.keys(a).sort()

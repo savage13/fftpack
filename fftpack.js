@@ -9,6 +9,42 @@ function fft(x) {
   let x2 = x.flatMap((v) => [v, 0]);
   return cfftf1(n, x2, ch, wa, ifac, -1);
 }
+function ifft(x) {
+  const n2 = x.length;
+  if (n2 % 2 != 0) {
+    throw new Error("expected re,im pairs with length n*2");
+  }
+  if (n2 == 0)
+    return [0];
+  if (n2 == 2)
+    return [x[0], 0];
+  let n = n2 / 2;
+  let ch = Array(n2).fill(0);
+  let { wa, ifac } = cffti1(n);
+  let x3 = cfftf1(n, x, ch, wa, ifac, 1);
+  return x3.map((v) => v / n);
+}
+function fftfreq(n, dt = 1) {
+  const val = 1 / (n * dt);
+  let y;
+  if (n <= 0 || dt == 0) {
+    return [];
+  }
+  if (n % 2 == 0) {
+    let m = n / 2;
+    y = [
+      ...Array(m).fill(0).map((_, i) => i),
+      ...Array(m).fill(0).map((_, i) => -(i + 1)).toReversed()
+    ];
+  } else {
+    let m = (n - 1) / 2;
+    y = [
+      ...Array(1 + m).fill(0).map((_, i) => i),
+      ...Array(m).fill(0).map((_, i) => -(i + 1)).toReversed()
+    ];
+  }
+  return y.map((v) => v * val);
+}
 function cfftf1(n, c, ch, wa, ifac, isign) {
   let ix2, ix3, ix4;
   let nf = ifac[1];
@@ -505,6 +541,8 @@ function factorize(n) {
   return ifac;
 }
 export {
-  fft
+  fft,
+  fftfreq,
+  ifft
 };
 //# sourceMappingURL=fftpack.js.map

@@ -1,5 +1,7 @@
 
 export function fft(x: number[]): number[] {
+    // Input is assumed to be real only; n
+    // Output is complex (re, im) pairs 2*n
     const n = x.length
     if (n == 1) {
         return [x[0], 0]
@@ -8,6 +10,49 @@ export function fft(x: number[]): number[] {
     let ch = Array(2 * n).fill(0)
     let x2 = x.flatMap(v => [v, 0])
     return cfftf1(n, x2, ch, wa, ifac, -1)
+}
+
+export function ifft(x: number[]): number[] {
+    // Input is assumed to be complex, 2*n (re, im) pairs
+    // output is complex, (re, im) pairs 2*n
+    const n2 = x.length
+    if (n2 % 2 != 0) {
+        throw new Error("expected re,im pairs with length n*2")
+    }
+    if (n2 == 0)
+        return [0]
+    if (n2 == 2)
+        return [x[0], 0]
+    let n = n2 / 2
+    let ch = Array(n2).fill(0)
+    //let x2 = x.flatMap(v => [v, 0])
+    let { wa, ifac } = cffti1(n)
+    let x3 = cfftf1(n, x, ch, wa, ifac, +1)
+    // Normalization
+    return x3.map(v => v / n)
+}
+
+export function fftfreq(n: number, dt: number = 1): number[] {
+    const val = 1.0 / (n * dt)
+    let y: number[]
+    if (n <= 0 || dt == 0.0) {
+        return []
+    }
+    if (n % 2 == 0) { // Even
+        let m = n / 2
+        y = [
+            ...Array(m).fill(0).map((_, i) => i),
+            ...Array(m).fill(0).map((_, i) => -(i + 1)).toReversed()
+        ]
+    } else { // Odd
+        let m = (n - 1) / 2
+        y = [
+            ...Array(1 + m).fill(0).map((_, i) => i),
+            ...Array(m).fill(0).map((_, i) => -(i + 1)).toReversed()
+        ]
+    }
+    return y.map(v => v * val)
+
 }
 
 function cfftf1(n: number, c: number[], ch: number[], wa: number[], ifac: number[], isign: number): number[] {

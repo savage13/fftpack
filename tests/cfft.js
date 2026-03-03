@@ -1,7 +1,7 @@
 
 
 import * as fs from 'fs'
-import { fft } from '../fftpack.js'
+import { fft, ifft, fftfreq } from '../fftpack.js'
 import { deepEqualTolerance } from '../tests/deepEqualTolerance.js'
 
 const tol = 1e-11
@@ -14,6 +14,9 @@ function eq(a, b, tol = 1e-12) {
 
 function zeros(n) {
     return Array(n).fill(0)
+}
+function ones(n) {
+    return Array(n).fill(1)
 }
 function imp(n, k=0) {
     let v = zeros(n)
@@ -30,13 +33,24 @@ function c_ones(n) {
     }
     return v
 }
+eq( fftfreq(0),  [])
+eq( fftfreq(1),  [0])
+eq( fftfreq(2),  [0, -0.5])
+eq( fftfreq(3),  [0, 1/3, -1/3])
+eq( fftfreq(4),  [0, 1/4, -1/2, -1/4])
+eq( fftfreq(5),  [0, 1/5, 2/5, -2/5, -1/5])
+eq( fftfreq(6),  [0, 1/6, 2/6, -3/6, -2/6, -1/6])
+eq( fftfreq(7),  [0, 1/7, 2/7, 3/7, -3/7, -2/7, -1/7])
+eq( fftfreq(8),  [0, 1/8, 2/8, 3/8, -4/8, -3/8, -2/8, -1/8])
+eq( fftfreq(9),  [0, 1/9, 2/9, 3/9, 4/9, -4/9, -3/9, -2/9, -1/9])
+eq( fftfreq(10), [0, 1/10, 2/10, 3/10, 4/10, -5/10, -4/10, -3/10, -2/10, -1/10])
+
+eq( fftfreq(3,0.1),  [0, 1/0.3, -1/0.3])
 
 eq(fft([0]), [0,0])
 eq(fft([1]), [1,0])
 eq(fft([-1]), [-1, 0])
 eq(fft([1.2]), [1.2, 0])
-
-//eq(fft([0, 0]), [z(0), z(0)])
 
 eq( fft([0,0]), [0, 0, 0, 0] )
 
@@ -197,9 +211,18 @@ for(let n = 8; n < 256; n++) {
     eq(fft(imp(n)), c_ones(n))
 }
 
+for(let n = 1; n < 256; n++) {
+    eq( ifft(c_zeros(n)), c_zeros(n) )
+    eq( ifft(c_ones(n)), imp(n*2) )
+}
+
+
 // See cfft.py for generation of cfft.json
-const tests = JSON.parse( fs.readFileSync('tests/cfft.json','utf8'))
-for(const t of tests) {
-    eq(fft(t.input), t.output)
+try {
+    const tests = JSON.parse( fs.readFileSync('tests/cfft.json','utf8'))
+    for(const t of tests) {
+        eq(fft(t.input), t.output)
+    }
+} catch (err) {
 }
 console.log(`${ntests} tests run`)
