@@ -23,6 +23,13 @@ function imp(n, k=0) {
     v[k] = 1
     return v
 }
+function drange(n) {
+    let out = []
+    for(let i = 1; i <= n; i++) {
+        out.push(i)
+    }
+    return out
+}
 function c_zeros(n) {
     return Array(n*2).fill(0)
 }
@@ -211,9 +218,64 @@ for(let n = 8; n < 256; n++) {
     eq(fft(imp(n)), c_ones(n))
 }
 
+
+// Inverse FFT (All Zeros, All Ones)
 for(let n = 1; n < 256; n++) {
     eq( ifft(c_zeros(n)), c_zeros(n) )
     eq( ifft(c_ones(n)), imp(n*2) )
+}
+
+// FFT(IFFT(x)) = x 
+for(let n = 1; n <= 64; n++) {
+    // Impulse function at all points
+    for(let k = 0; k < n; k++) {
+        let input = imp(n, k)
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
+    {
+        // Linear Ramp
+        let input = drange(n)
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
+    {
+        // Negative Ramp
+        let input = drange(n).map(v => -v)
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
+    {
+        // Inverse Linear Ramp
+        let input = drange(n).toReversed()
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
+    {
+        // Random Values [-1,1]
+        let input = Array(n).fill(0).map(_ => Math.random() * 2 - 1)
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
+    {
+        // Random Values [-10,10]
+        let input = Array(n).fill(0).map(_ => 10 * (Math.random() * 2 - 1))
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
+    {
+        // Random Values [-pi,pi]
+        let input = Array(n).fill(0).map(_ => Math.PI * (Math.random() * 2 - 1))
+        let tmp = fft(input)
+        let output = ifft(tmp).filter((v,i) => i % 2 == 0)
+        eq(input, output)
+    }
 }
 
 
