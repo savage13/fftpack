@@ -2,7 +2,7 @@ fftpack in javascript
 ---------------------
 Implementation of fftpack in javascript, see https://www.netlib.org/fftpack/
 
-Tries to follow the fftpack C implementation
+Tries to follow the fftpack (Fortran or C) implementation
 
 
 Example
