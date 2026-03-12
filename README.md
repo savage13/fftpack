@@ -18,9 +18,22 @@ data[50] = 1.0
 let Data = fft(data)
 ```
 
+Installation
+------------
+
+The file `fftpack.js` and `fftpack.js.map` are a Javascript module compiled from the typescript sources in `src`
+You can grab them and use them directly.
+
+Building
+--------
+Building is done using esbuild (probably does not need it) that converts `src/fftpack.ts => fftpack.js`
+
+Run `npm run dev`
+
 Testing
 -------
-Tests are based on scipy version 1.17.1 (Feb 2026) fftpack
+Tests are based on scipy version 1.17.1 (Feb 2026) fftpack.  Tests can be run by `npm run test`
+
 
 Functions
 ---------
